@@ -1,0 +1,58 @@
+[tool.poetry]
+name = "ReservAI"
+version = "0.1.0"
+description = "ReservAI is your key to the city."
+authors = ["Ryan Slama <ryan@reservai.net>", "Yash Sahota <yash@reservai.net>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.0.256"
+black = "^23.1.0"
+pytest = "^7.2.2"
+coverage = { extras = ["toml"], version = "^7.2.2" }
+pytest-cov = "^4.0.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.coverage.paths]
+source = ["src", "*/site-packages"]
+
+[tool.coverage.run]
+branch = true
+source = ["hello_world"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.ruff]
+select = [
+    # Pycodestyle
+    "E",
+    "W",
+    # flake-bugbear
+    "B",
+    "B9",
+    "D",  # Docstrings
+    "F",  # Pyflakes
+    "I",  # isort
+    "S",  # flake-bandit security rules
+    "N",  # PEP 8 naming
+]
+ignore = [
+    # Missing docstring in public module
+    "D100",
+    # Missing docstring in public package
+    "D104",
+    # no-blank-line-before-class (incompatible with D203)
+    "D203",
+    # multi-line-summary-first-line (incompatible with multi-line-summary-second-line)
+    "D212",
+    # Allow asserts
+    "S101",
+]
