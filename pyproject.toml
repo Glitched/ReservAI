@@ -5,6 +5,7 @@ description = "ReservAI is your key to the city."
 authors = ["Ryan Slama <ryan@reservai.net>", "Yash Sahota <yash@reservai.net>"]
 license = "MIT"
 readme = "README.md"
+virtualenvs.in-project = true
 
 [tool.poetry.dependencies]
 python = "^3.11"
