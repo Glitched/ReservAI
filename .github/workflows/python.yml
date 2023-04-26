@@ -12,7 +12,7 @@ jobs:
           python-version: "3.11"
       - uses: Gr1N/setup-poetry@v8
       - run: poetry install --with dev
-      - run: poetry shell
+      - run: source $(poetry env info --path)/bin/activate
       - uses: psf/black@stable
       - uses: chartboost/ruff-action@v1
       - uses: jakebailey/pyright-action@v1
