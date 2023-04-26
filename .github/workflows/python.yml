@@ -7,11 +7,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
+      - name: Install poetry
+        run: pipx install poetry
+
       - uses: actions/setup-python@v4
         with:
           python-version: "3.11"
-      - uses: Gr1N/setup-poetry@v8
-      - run: poetry install --with dev
+          cache: 'poetry'
+
+      - run: poetry install
+
+      - run: echo "$(poetry env info --path)/bin" >> $GITHUB_PATH
+
       - uses: psf/black@stable
       - uses: chartboost/ruff-action@v1
       - uses: jakebailey/pyright-action@v1
