@@ -7,6 +7,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - uses: Gr1N/setup-poetry@v8
+      - run: poetry install --with dev
       - uses: psf/black@stable
       - uses: chartboost/ruff-action@v1
       - uses: jakebailey/pyright-action@v1
