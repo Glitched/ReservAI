@@ -48,7 +48,7 @@ COPY src/ ./src/
 COPY --from=builder /frontend/dist/ ./static/
 
 # Expose the port your app will run on
-EXPOSE 80
+EXPOSE 8080
 
 # Start your application
-CMD ["uvicorn", "src.main.main:app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "src.main.main:app", "--host", "0.0.0.0", "--port", "8080"]
