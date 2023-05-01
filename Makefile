@@ -9,3 +9,6 @@ fe-dev:
 
 fe-build:
 	cd frontend; yarn build
+
+server:
+	uvicorn src.main.main:app

@@ -1,16 +1,15 @@
-import os
+from main.util import get_secret
 
 
 class Config:
     """Configuration for the main app."""
 
-    DB_CONFIG = os.getenv(
-        "DB_CONFIG",
+    DB_CONFIG = (
         "postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}".format(
-            DB_USER=os.getenv("DB_USER"),
-            DB_PASSWORD=os.getenv("DB_PASSWORD"),
-            DB_HOST=os.getenv("DB_HOST"),
-            DB_NAME=os.getenv("DB_NAME"),
+            DB_USER=get_secret("DB_USER"),
+            DB_PASSWORD=get_secret("DB_PASS"),
+            DB_HOST=get_secret("DB_HOST"),
+            DB_NAME=get_secret("DB_NAME"),
         ),
     )
 
