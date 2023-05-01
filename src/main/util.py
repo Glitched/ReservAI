@@ -9,12 +9,15 @@ Secret = Literal[
     "JWT_SECRET",
     "VERIFICATION_TOKEN_SECRET",
     "RESET_PASSWORD_TOKEN_SECRET",
+    "GOOGLE_OAUTH_CLIENT_ID",
+    "GOOGLE_OAUTH_CLIENT_SECRET",
+    "OAUTH_STATE_SECRET",
 ]
 
 
 def get_secret(secret: Secret):
     """Read a secret from the environment variable."""
-    cred = os.getenv("secret")
+    cred = os.getenv(secret)
 
     # Return cred if it's defined
     if cred is not None:
@@ -30,4 +33,4 @@ def get_secret(secret: Secret):
 def is_prod():
     """is_prod returns true if we're in production."""
     env = os.getenv("env", "dev")
-    return env.lower() != "prod"
+    return env.lower() == "prod"

@@ -8,9 +8,6 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import declarative_base
-
-Base = declarative_base()
 
 # Adapted from this tutorial:
 # https://praciano.com.br/fastapi-and-async-sqlalchemy-20-with-pytest-done-right.html
@@ -23,6 +20,10 @@ class DatabaseSessionManager:
         """Set properties on the class to None."""
         self._engine: AsyncEngine | None = None
         self._sessionmaker: async_sessionmaker[AsyncSession] | None = None
+
+    def is_initialized(self):
+        """Determine if we have an engine."""
+        return sessionmanager._engine is None
 
     def init(self, host: str):
         """Create real values for properties."""

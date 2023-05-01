@@ -1,58 +1,42 @@
 # from sqlalchemy import Column, String, select
 # from sqlalchemy.exc import NoResultFound
-import uuid
-from typing import Any, Optional
 
-from fastapi import Depends, Request
-from fastapi_users import BaseUserManager, UUIDIDMixin
-from fastapi_users.db import SQLAlchemyBaseUserTableUUID, SQLAlchemyUserDatabase
-from main.database import Base, get_db
-from main.util import get_secret
+from fastapi import Depends
+from fastapi_users.db import (
+    SQLAlchemyBaseOAuthAccountTableUUID,
+    SQLAlchemyBaseUserTableUUID,
+    SQLAlchemyUserDatabase,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Mapped, declarative_base, relationship
+
+from ..database import get_db
+
+Base = declarative_base()
+
+
+class OAuthAccount(SQLAlchemyBaseOAuthAccountTableUUID, Base):
+    """Adapter so we can use sign in with google."""
+
+    pass
 
 
 class User(SQLAlchemyBaseUserTableUUID, Base):
     """fastapi-users base class."""
 
-    pass
+    oauth_accounts: Mapped[list[OAuthAccount]] = relationship(
+        "OAuthAccount", lazy="joined"
+    )
 
 
 async def get_user_db(
     session: AsyncSession = Depends(get_db),
 ):
     """get_user_db returns the fastapi-users."""
-    udb: SQLAlchemyUserDatabase[User, Any] = SQLAlchemyUserDatabase(session, User)
+    udb: SQLAlchemyUserDatabase[User, OAuthAccount] = SQLAlchemyUserDatabase(
+        session, User, OAuthAccount
+    )
     yield udb
-
-
-class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
-    """The UserManager manages users? or something."""
-
-    reset_password_token_secret = get_secret("RESET_PASSWORD_TOKEN_SECRET")
-    verification_token_secret = get_secret("VERIFICATION_TOKEN_SECRET")
-
-    async def on_after_register(self, user: User, request: Optional[Request] = None):
-        """Handle user registration event."""
-        print(f"User {user.id} has registered.")
-
-    async def on_after_forgot_password(
-        self, user: User, token: str, request: Optional[Request] = None
-    ):
-        """Handle user forgot password event."""
-        print(f"User {user.id} has forgot their password. Reset token: {token}")
-
-    async def on_after_request_verify(
-        self, user: User, token: str, request: Optional[Request] = None
-    ):
-        """Handle user verification event."""
-        print(f"Verification requested for user {user.id}. Verification token: {token}")
-
-
-async def get_user_manager(
-    user_db: SQLAlchemyUserDatabase[User, Any] = Depends(get_user_db)
-):
-    """Get the UserManager."""
-    yield UserManager(user_db)
 
 
 # class UserOld(Base):
