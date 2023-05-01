@@ -1,7 +1,15 @@
 import os
 from typing import Literal
 
-Secret = Literal["DB_USER", "DB_PASS", "DB_HOST", "DB_NAME"]
+Secret = Literal[
+    "DB_USER",
+    "DB_PASS",
+    "DB_HOST",
+    "DB_NAME",
+    "JWT_SECRET",
+    "VERIFICATION_TOKEN_SECRET",
+    "RESET_PASSWORD_TOKEN_SECRET",
+]
 
 
 def get_secret(secret: Secret):
