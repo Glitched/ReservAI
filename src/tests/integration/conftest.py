@@ -17,7 +17,7 @@ from starlette.requests import Request
 def app():
     """Get an instance of our app."""
     with ExitStack():
-        yield init_app()
+        yield init_app(init_db=False)
 
 
 @pytest.fixture
@@ -73,7 +73,6 @@ async def session_override(app: FastAPI, connection_test: AsyncConnection):
 
     async def get_db_override():
         async with sessionmanager.session() as session:
-            print("GetDB!")
             yield session
 
     app.dependency_overrides[get_db] = get_db_override

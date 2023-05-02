@@ -9,15 +9,19 @@ from .database import sessionmanager
 sessionmanager.init(config.DB_CONFIG)
 
 
-def init_app():
+def init_app(init_db: bool = True):
     """Create the FastAPI Instance."""
-    sessionmanager.init(config.DB_CONFIG)
+    # lifespan is optional, but pyright doesn't like it
+    lifespan = None  # type: ignore
 
-    @asynccontextmanager
-    async def lifespan(app: FastAPI):
-        yield
-        if not sessionmanager.is_initialized():
-            await sessionmanager.close()
+    if init_db:
+        sessionmanager.init(config.DB_CONFIG)
+
+        @asynccontextmanager
+        async def lifespan(app: FastAPI):
+            yield
+            if not sessionmanager.is_initialized():
+                await sessionmanager.close()
 
     server = FastAPI(title="ReservAI", lifespan=lifespan)
 
