@@ -51,6 +51,13 @@ source = ["hello_world"]
 [tool.coverage.report]
 show_missing = true
 
+[tool.black]
+extend-exclude = '''
+/(
+  | alembic
+)/
+'''
+
 [tool.ruff]
 select = [
     # Pycodestyle
@@ -77,6 +84,7 @@ ignore = [
     # Allow asserts
     "S101",
 ]
+exclude = ["alembic"]
 
 # Configure bugbear to play nice with FastAPI
 [tool.ruff.flake8-bugbear]
