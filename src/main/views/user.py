@@ -9,18 +9,26 @@ router = APIRouter(prefix="/user", tags=["user"])
 
 
 class UserSchemaBase(BaseModel):
+    """Base user schema."""
+
     email: str | None = None
     full_name: str | None = None
 
 
 class UserSchemaCreate(UserSchemaBase):
+    """User schema returned on create."""
+
     pass
 
 
 class UserSchema(UserSchemaBase):
+    """User schema returned on fetch."""
+
     id: str
 
     class Config:
+        """Set pydantic config to orm mode."""
+
         orm_mode = True
 
 
