@@ -7,7 +7,11 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from alembic import context
 from src.main.config import config as app_config
-from src.main.models.user import Base, OAuthAccount, User  # type: ignore  # noqa: F401
+
+# Put models where alembic can see them.
+from src.main.models.user import User  # noqa: F401 # type:ignore
+
+from src.main.base import Base
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.

@@ -1,10 +1,11 @@
 from typing import Any
 from uuid import uuid4
 
-from main.database import Base
 from sqlalchemy import Column, String, select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from ..base import Base
 
 
 class User(Base):
@@ -16,14 +17,9 @@ class User(Base):
     full_name = Column(String, nullable=False)
 
     @classmethod
-    async def create(
-        cls, db: AsyncSession, id: str | None = None, **kwargs: dict[str, Any]
-    ):
+    async def create(cls, db: AsyncSession, **kwargs: dict[str, Any]):
         """Create a new user."""
-        if not id:
-            id = uuid4().hex
-
-        transaction = cls(id=id, **kwargs)
+        transaction = cls(id=uuid4().hex, **kwargs)
         db.add(transaction)
         await db.commit()
         await db.refresh(transaction)

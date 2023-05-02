@@ -8,12 +8,11 @@ from sqlalchemy.ext.asyncio import (
     async_sessionmaker,
     create_async_engine,
 )
-from sqlalchemy.orm import declarative_base
+
+from .base import Base
 
 # Adapted from this tutorial:
 # https://praciano.com.br/fastapi-and-async-sqlalchemy-20-with-pytest-done-right.html
-
-Base = declarative_base()
 
 
 class DatabaseSessionManager:

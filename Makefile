@@ -12,3 +12,6 @@ fe-build:
 
 server:
 	uvicorn src.main.main:app
+
+server-watch:
+	uvicorn src.main.main:app --reload

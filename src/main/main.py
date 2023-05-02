@@ -21,6 +21,9 @@ def init_app():
 
     server = FastAPI(title="ReservAI", lifespan=lifespan)
 
+    from .views.user import router as user_router
+
+    server.include_router(user_router, prefix="/api", tags=["user"])
     return server
 
 
