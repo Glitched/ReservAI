@@ -11,7 +11,10 @@ fe-build:
 	cd frontend; yarn build
 
 server:
-	uvicorn src.main.main:app
+	cd src; uvicorn main.main:app
 
 server-watch:
-	uvicorn src.main.main:app --reload
+	cd src; uvicorn main.main:app --reload
+
+test:
+	cd src; python3 -m pytest tests/integration/
