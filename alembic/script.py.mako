@@ -5,7 +5,6 @@ Revises: ${down_revision | comma,n}
 Create Date: ${create_date}
 
 """
-import fastapi_users_db_sqlalchemy as fastapi_users_db_sqlalchemy
 import sqlalchemy as sa
 
 from alembic import op
@@ -19,8 +18,10 @@ depends_on = ${repr(depends_on)}
 
 
 def upgrade() -> None:
+    """Upgrade the schema to this version."""
     ${upgrades if upgrades else "pass"}
 
 
 def downgrade() -> None:
+    """Downgrade the schema to this version."""
     ${downgrades if downgrades else "pass"}
