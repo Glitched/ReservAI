@@ -1,7 +1,37 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
-app = FastAPI()
+from .config import config
+from .database import sessionmanager
+
+sessionmanager.init(config.DB_CONFIG)
+
+
+def init_app(init_db: bool = True):
+    """Create the FastAPI Instance."""
+    # lifespan is optional, but pyright doesn't like it
+    lifespan = None  # type: ignore
+
+    if init_db:
+        sessionmanager.init(config.DB_CONFIG)
+
+        @asynccontextmanager
+        async def lifespan(app: FastAPI):
+            yield
+            if not sessionmanager.is_initialized():
+                await sessionmanager.close()
+
+    server = FastAPI(title="ReservAI", lifespan=lifespan)
+
+    from .views.user import router as user_router
+
+    server.include_router(user_router, prefix="/api", tags=["user"])
+    return server
+
+
+app = init_app()
 
 
 @app.get("/hello")
