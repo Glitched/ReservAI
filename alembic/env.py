@@ -10,6 +10,9 @@ from src.main.base import Base
 from src.main.config import config as app_config
 
 # Put models where alembic can see them.
+# We must import models even if we don't use them so the Base class
+# can determine the necessary DB schema changes from them.
+# Too much magic!
 from src.main.models.user import OAuthAccount, User  # noqa: F401 # type:ignore
 
 # this is the Alembic Config object, which provides
