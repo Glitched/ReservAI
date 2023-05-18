@@ -1,7 +1,9 @@
 import uuid
 from contextlib import asynccontextmanager
+from typing import Any
 
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
+from fastapi.responses import RedirectResponse, Response
 from fastapi.staticfiles import StaticFiles
 from fastapi_users import FastAPIUsers
 from fastapi_users.authentication import (
@@ -16,7 +18,17 @@ from .database import sessionmanager
 from .models.user import User, get_user_manager
 from .util import get_secret
 
-cookie_transport = CookieTransport(cookie_max_age=3600)
+
+class CookieRedirectTransport(CookieTransport):
+    """Custom cookie transport thar redirects the user after a succesful login."""
+
+    async def get_login_response(self, token: str) -> Response:
+        """Redirect the user on successful login."""
+        response = RedirectResponse("/auth")
+        return self._set_login_cookie(response, token)
+
+
+cookie_transport = CookieRedirectTransport(cookie_max_age=3600)
 
 
 def get_jwt_strategy() -> JWTStrategy[User, uuid.UUID]:
@@ -34,6 +46,10 @@ fastapi_users = FastAPIUsers[User, uuid.UUID](
     get_user_manager,
     [auth_backend],
 )
+
+
+# Our library doesn't provide enough type information here.
+current_active_user: Any = fastapi_users.current_user(active=True)
 
 
 def init_app(init_db: bool = True):
@@ -75,10 +91,16 @@ app.include_router(
 )
 
 
-@app.get("/hello")
+@app.get("/")
 def read_root():
     """Let's just prove the server works."""
-    return {"Hello": "World"}
+    return {"message": "The server is running."}
+
+
+@app.get("/auth")
+def read_auth(user: User = Depends(current_active_user)):
+    """Let's just prove auth works."""
+    return {"message": "You are logged in!", "email": user.email}
 
 
 @app.get("/items/{item_id}")
