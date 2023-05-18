@@ -65,7 +65,10 @@ google_oauth_client = GoogleOAuth2(
 app.include_router(
     # Our library doesn't have strict enough types for our linter
     fastapi_users.get_oauth_router(  # type: ignore
-        google_oauth_client, auth_backend, get_secret("OAUTH_STATE_SECRET")
+        google_oauth_client,
+        auth_backend,
+        get_secret("OAUTH_STATE_SECRET"),
+        is_verified_by_default=True,
     ),
     prefix="/auth/google",
     tags=["auth"],
