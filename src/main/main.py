@@ -1,12 +1,39 @@
+import uuid
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
+from fastapi_users import FastAPIUsers
+from fastapi_users.authentication import (
+    AuthenticationBackend,
+    CookieTransport,
+    JWTStrategy,
+)
+from httpx_oauth.clients.google import GoogleOAuth2
 
 from .config import config
 from .database import sessionmanager
+from .models.user import User, get_user_manager
+from .util import get_secret
 
-sessionmanager.init(config.DB_CONFIG)
+cookie_transport = CookieTransport(cookie_max_age=3600)
+
+
+def get_jwt_strategy() -> JWTStrategy[User, uuid.UUID]:
+    """Initialize the FastAPI-Users JWTStrategy."""
+    return JWTStrategy(secret=get_secret("JWT_SECRET"), lifetime_seconds=3600)
+
+
+auth_backend = AuthenticationBackend(
+    name="jwt",
+    transport=cookie_transport,
+    get_strategy=get_jwt_strategy,
+)
+
+fastapi_users = FastAPIUsers[User, uuid.UUID](
+    get_user_manager,
+    [auth_backend],
+)
 
 
 def init_app(init_db: bool = True):
@@ -25,13 +52,24 @@ def init_app(init_db: bool = True):
 
     server = FastAPI(title="ReservAI", lifespan=lifespan)
 
-    from .views.user import router as user_router
-
-    server.include_router(user_router, prefix="/api", tags=["user"])
     return server
 
 
 app = init_app()
+
+
+google_oauth_client = GoogleOAuth2(
+    get_secret("GOOGLE_OAUTH_CLIENT_ID"), get_secret("GOOGLE_OAUTH_CLIENT_SECRET")
+)
+
+app.include_router(
+    # Our library doesn't have strict enough types for our linter
+    fastapi_users.get_oauth_router(  # type: ignore
+        google_oauth_client, auth_backend, "SECRET"
+    ),
+    prefix="/auth/google",
+    tags=["auth"],
+)
 
 
 @app.get("/hello")
