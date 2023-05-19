@@ -3,7 +3,7 @@ name: Build and Push Docker image
 on:
   push:
     branches:
-      - main
+      - main-test
 
 jobs:
   build:
@@ -34,3 +34,28 @@ jobs:
     # - name: Run Tests
     #   run: |
     #     docker run --rm harbor.bitworm.net/reservai-prod/app:${{ github.sha }} ./run-tests.sh
+
+    # existing steps...
+
+    - name: Checkout GitOps repository
+      uses: actions/checkout@v2
+      with:
+        repository: yashsahota/ReservAI-gitops
+        token: ${{ secrets.GH_PAT }} 
+        path: ./ReservAI-gitops
+
+    - name: Update Image Version in the related HelmChart values.yaml
+      uses: fjogeleit/yaml-update-action@main
+      with:
+        valueFile: 'reservai/values-prod.yaml'
+        propertyPath: 'image.tag'
+        value: ${{ github.sha }}
+        repository: yashsahota/ReservAI-gitops
+        branch: main
+        commitChange: true
+        message: 'Update Image Version to $${{ github.sha }}'
+        token: ${{ secrets.GH_PAT }}
+        workDir: ReservAI-gitops
+        commitUserEmail: 'actions@reservai.net'
+
+
