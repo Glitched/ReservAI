@@ -44,6 +44,10 @@ RUN poetry config virtualenvs.create false && \
 # Copy your source files
 COPY src/ ./src/
 
+# Copy Alembic files
+COPY alembic.ini ./
+COPY alembic/ ./alembic/
+
 # Copy frontend
 COPY --from=builder /frontend/dist/ ./static/
 
