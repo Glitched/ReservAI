@@ -1,40 +1,84 @@
-from typing import Any
-from uuid import uuid4
+import uuid
 
-from sqlalchemy import Column, String, select
-from sqlalchemy.exc import NoResultFound
+from fastapi import Depends, Request
+from fastapi_users import BaseUserManager, UUIDIDMixin, schemas
+from fastapi_users.db import (
+    SQLAlchemyBaseOAuthAccountTableUUID,
+    SQLAlchemyBaseUserTableUUID,
+    SQLAlchemyUserDatabase,
+)
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Mapped, relationship
 
 from ..base import Base
+from ..database import get_db
+from ..util import get_secret
 
 
-class User(Base):
-    """Primary user object for the app."""
+class OAuthAccount(SQLAlchemyBaseOAuthAccountTableUUID, Base):
+    """Google Oauth specific information for a user."""
 
-    __tablename__ = "users"
-    id = Column(String, primary_key=True)
-    email = Column(String, unique=True, nullable=False)
-    full_name = Column(String, nullable=False)
+    pass
 
-    @classmethod
-    async def create(cls, db: AsyncSession, **kwargs: dict[str, Any]):
-        """Create a new user."""
-        transaction = cls(id=uuid4().hex, **kwargs)
-        db.add(transaction)
-        await db.commit()
-        await db.refresh(transaction)
-        return transaction
 
-    @classmethod
-    async def get(cls, db: AsyncSession, id: str):
-        """Get user by ID."""
-        try:
-            transaction = await db.get(cls, id)
-        except NoResultFound:
-            return None
-        return transaction
+class User(SQLAlchemyBaseUserTableUUID, Base):
+    """Base user class, extending FastAPI-users."""
 
-    @classmethod
-    async def get_all(cls, db: AsyncSession):
-        """Fetch all users."""
-        return (await db.execute(select(cls))).scalars().all()
+    oauth_accounts: Mapped[list[OAuthAccount]] = relationship(
+        "OAuthAccount", lazy="joined"
+    )
+
+
+UserDB = SQLAlchemyUserDatabase[User, uuid.UUID]
+
+
+async def get_user_db(session: AsyncSession = Depends(get_db)):
+    """Return the FastAPI-users database object."""
+    db: UserDB = SQLAlchemyUserDatabase(session, User, OAuthAccount)
+    yield db
+
+
+class UserManager(UUIDIDMixin, BaseUserManager[User, uuid.UUID]):
+    """Define handlers for user events."""
+
+    reset_password_token_secret = get_secret("RESET_PASSWORD_TOKEN_SECRET")
+    verification_token_secret = get_secret("VERIFICATION_TOKEN_SECRET")
+
+    async def on_after_register(self, user: User, request: Request | None = None):
+        """Handle user registation event."""
+        print(f"User {user.id} has registered.")
+
+    async def on_after_forgot_password(
+        self, user: User, token: str, request: Request | None = None
+    ):
+        """Handle user forgot password event."""
+        print(f"User {user.id} has forgot their password. Reset token: {token}")
+
+    async def on_after_request_verify(
+        self, user: User, token: str, request: Request | None = None
+    ):
+        """Handle user verification event."""
+        print(f"Verification requested for user {user.id}. Verification token: {token}")
+
+
+async def get_user_manager(user_db: UserDB = Depends(get_user_db)):
+    """Return an instance of the UserManager class."""
+    yield UserManager(user_db)
+
+
+class UserRead(schemas.BaseUser[uuid.UUID]):
+    """Pydantic schema for a user object on read."""
+
+    pass
+
+
+class UserCreate(schemas.BaseUserCreate):
+    """Pydantic schema for a user object on create."""
+
+    pass
+
+
+class UserUpdate(schemas.BaseUserUpdate):
+    """Pydantic schema for a user object on update."""
+
+    pass

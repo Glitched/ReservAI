@@ -12,14 +12,14 @@ export default function Type({ msg, speed }: { msg: string; speed?: number }) {
       setShowBlock((curr) => !curr);
     }, 500);
     return () => clearInterval(interval);
-  }, []);
+  });
 
   useEffect(() => {
     const interval = setInterval(() => {
       setLen((len) => len + 1);
     }, speed ?? 50);
     return () => clearInterval(interval);
-  }, []);
+  });
 
   const textToRender = msg.slice(0, len);
 

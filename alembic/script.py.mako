@@ -6,6 +6,7 @@ Revises: ${down_revision | comma,n}
 Create Date: ${create_date}
 
 """
+import fastapi_users_db_sqlalchemy as fastapi_users_db_sqlalchemy
 import sqlalchemy as sa
 
 from alembic import op

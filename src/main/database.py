@@ -30,7 +30,9 @@ class DatabaseSessionManager:
     def init(self, host: str):
         """Create real values for properties."""
         self._engine = create_async_engine(host)
-        self._sessionmaker = async_sessionmaker(autocommit=False, bind=self._engine)
+        self._sessionmaker = async_sessionmaker(
+            autocommit=False, bind=self._engine, expire_on_commit=False
+        )
 
     async def close(self):
         """Close the current db session."""

@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
-  const headerMsg = "ReservAI is current in a closed beta.\n\nStay tuned.";
+  const headerMsg = "ReservAI is currently in a closed beta.\n\nStay tuned.";
   return (
     <main
       className={`flex min-h-screen flex-col items-center justify-between md:p-24 sm:p-12 p-8 ${inter.className}`}
