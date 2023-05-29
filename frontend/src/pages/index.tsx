@@ -35,7 +35,14 @@ export default function Home() {
         <div className="bottom-0 left-0 flex flex-col justify-center  from-white via-white dark:from-black dark:via-black static h-auto w-auto bg-none">
           <Type msg={headerMsg} callback={() => setShowButton(true)} />
           <br />
-          {showButton && <Button className="animate-fade-in">Sign in</Button>}
+          {showButton && (
+            <Button
+              className="animate-fade-in"
+              onClick={() => (document.location = url)}
+            >
+              Sign in
+            </Button>
+          )}
         </div>
       </div>
     </main>
