@@ -3,9 +3,18 @@ import { useEffect, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 
-export default function Type({ msg, speed }: { msg: string; speed?: number }) {
+export default function Type({
+  msg,
+  speed,
+  callback,
+}: {
+  msg: string;
+  speed?: number;
+  callback?: () => void;
+}) {
   const [showBlock, setShowBlock] = useState(false);
   const [len, setLen] = useState(0);
+  const [hasCalledCallback, setHasCalledCallback] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -17,9 +26,20 @@ export default function Type({ msg, speed }: { msg: string; speed?: number }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setLen((len) => len + 1);
-    }, speed ?? 40);
+    }, speed ?? 20);
     return () => clearInterval(interval);
   });
+
+  useEffect(() => {
+    // Call callback when we're fully typed.
+    if (len > msg.length && !hasCalledCallback) {
+      setHasCalledCallback(true);
+      if (callback) {
+        callback();
+      }
+    }
+    return () => {};
+  }, [len]);
 
   const textToRender = msg.slice(0, len);
 
