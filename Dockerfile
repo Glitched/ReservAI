@@ -55,4 +55,4 @@ COPY --from=builder /frontend/dist/ ./static/
 EXPOSE 8080
 
 # Start your application
-CMD ["uvicorn", "src.main.main:app", "--host", "0.0.0.0", "--port", "8080", "--proxy-headers"]
+CMD ["uvicorn", "src.main.main:app", "--host", "0.0.0.0", "--port", "8080", "--proxy-headers", "--forwarded-allow-ips", "*"]
