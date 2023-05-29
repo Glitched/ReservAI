@@ -33,13 +33,9 @@ export default function Home() {
     >
       <div className="z-10 w-full max-w-5xl justify-between font-mono text-sm flex">
         <div className="bottom-0 left-0 flex flex-col justify-center  from-white via-white dark:from-black dark:via-black static h-auto w-auto bg-none">
-          <Type
-            speed={1}
-            msg={headerMsg}
-            callback={() => setShowButton(true)}
-          />
+          <Type msg={headerMsg} callback={() => setShowButton(true)} />
           <br />
-          {showButton && <Button>Sign in</Button>}
+          {showButton && <Button className="animate-fade-in">Sign in</Button>}
         </div>
       </div>
     </main>
