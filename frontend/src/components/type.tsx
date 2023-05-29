@@ -17,7 +17,7 @@ export default function Type({ msg, speed }: { msg: string; speed?: number }) {
   useEffect(() => {
     const interval = setInterval(() => {
       setLen((len) => len + 1);
-    }, speed ?? 50);
+    }, speed ?? 40);
     return () => clearInterval(interval);
   });
 
